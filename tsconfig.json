@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "UMD",
+    "moduleResolution": "Node",
+    "lib": [
+      "ES2020"
+    ],
+    "allowJs": false,
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "strict": true,
+    "emitDeclarationOnly": false,
+    "removeComments": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "preserveConstEnums": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "noImplicitAny": false,
+    "downlevelIteration": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "./parser/*.ts",
+    "./parser/parser.js",
+    "./parser-generator/*.ts"
+  ],
+  "exclude": [
+    "./node_modules/"
+  ]
+}
