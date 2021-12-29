@@ -119,7 +119,7 @@ AssignOp
 AddOp
   = op:(PLUS / DASH) { return parseOp(op); }
 MultOp
-  = op:(STAR / SLASH) { return parseOp(op); }
+  = op:(STAR / SLASH / MODULO) { return parseOp(op); }
 ExpOp
   = op:(DBL_STAR) { return parseOp(op); }
 OrOp
@@ -133,7 +133,7 @@ CompOp
 LogicOp
   = op:(AMP / PIPE / CARET) { return parseOp(op); }
 RangeOp
-  = op:(DBL_DOT / TPL_DOT) { return parseOp(op); }
+  = op:(TPL_DOT / DBL_DOT) { return parseOp(op); }
 UnaryOp
   = op:(BANG / DASH) { return parseOp(op); }
 

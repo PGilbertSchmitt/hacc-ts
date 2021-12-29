@@ -10,6 +10,7 @@ export enum OpType {
   DASH = 'DASH',
   STAR = 'STAR',
   SLASH = 'SLASH',
+  MODULO = 'MODULO',
   DBL_STAR = 'DBL_STAR',
   DBL_PIPE = 'DBL_PIPE',
   DBL_AMP = 'DBL_AMP',

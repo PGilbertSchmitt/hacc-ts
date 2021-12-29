@@ -64,6 +64,8 @@ export const parseOp = (opString: string): OpType => {
       return OpType.STAR;
     case '/':
       return OpType.SLASH;
+    case '%':
+      return OpType.MODULO;
     case '**':
       return OpType.DBL_STAR;
     case '||':
