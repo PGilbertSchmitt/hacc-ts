@@ -2,8 +2,10 @@ import {
   Keyword,
   OpType,
   NodeType,
+  AddendumType,
   
   Node,
+  Addendum,
 
   KeywordNode,
   IdentNode,
@@ -19,6 +21,10 @@ import {
   KeyValuePair,
   MapNode,
   GroupNode,
+  MemberAddendum,
+  CallAddendum,
+  IndexAddendum,
+  PostfixNode,
   
   ExpressionTail,
   NodeTail,
@@ -163,10 +169,10 @@ export const newBlock = (top: Node[], body: BlockTail[], _location: Location): B
   }, top)
 });
 
-export const newEmptyBlock = (_location: Location): BlockNode => ({
-  type: NodeType.BLOCK,
-  nodes: []
-});
+// export const newEmptyBlock = (_location: Location): BlockNode => ({
+//   type: NodeType.BLOCK,
+//   nodes: []
+// });
 
 export const newIdentList = (
   head: IdentNode,
@@ -177,7 +183,7 @@ export const newIdentList = (
 export const newFuncLiteral = (
   params: IdentNode[] | null,
   body: Node,
-  _location: Location
+  _location: Location,
 ): FunctionNode => ({
   type: NodeType.FUNCTION,
   params: params === null ? [] : params,
@@ -186,7 +192,7 @@ export const newFuncLiteral = (
 
 export const newArrayLiteral = (
   nodes: Node[] | null,
-  _location: Location  
+  _location: Location,
 ): ArrayNode => ({
   type: NodeType.ARRAY,
   nodes: nodes === null ? [] : nodes
@@ -194,7 +200,7 @@ export const newArrayLiteral = (
 
 export const newSetLiteral = (
   nodes: Node[] | null,
-  _location: Location
+  _location: Location,
 ): SetNode => ({
   type: NodeType.SET,
   nodes: nodes === null ? [] : nodes
@@ -203,7 +209,7 @@ export const newSetLiteral = (
 export const newKeyValuePair = (
   key: Node,
   value: Node,
-  _location: Location
+  _location: Location,
 ): KeyValuePair => ({ key, value });
 
 export const newKeyValuePairList = (
@@ -212,7 +218,7 @@ export const newKeyValuePairList = (
 ): KeyValuePair[] => ([ head, ...tail.map(tailNode => tailNode[3]) ]);
 
 export const newMapLiteral = (
-  pairs: KeyValuePair[] | null
+  pairs: KeyValuePair[] | null,
 ): MapNode => ({
   type: NodeType.MAP,
   pairs: pairs === null ? [] : pairs
@@ -220,8 +226,50 @@ export const newMapLiteral = (
 
 export const newGroup = (
   block: BlockNode,
-  _location: Location
+  _location: Location,
 ): GroupNode => ({
   type: NodeType.GROUP,
   nodes: block.nodes
 });
+
+export const newMember = (
+  member: IdentNode,
+): MemberAddendum => ({
+  type: AddendumType.MEMBER,
+  member
+});
+
+export const newCall = (
+  params: Node[],
+  _location: Location,
+): CallAddendum => ({
+  type: AddendumType.CALL,
+  params
+});
+
+export const newIndex = (
+  index: Node,
+  _location: Location,
+): IndexAddendum => ({
+  type: AddendumType.INDEX,
+  index
+})
+
+export const newPostfix = (
+  target: Node,
+  addendums: Addendum[],
+  location: Location,
+): Node => {
+  if (addendums.length === 0) {
+    return target;
+  }
+
+  const [ addendum, ...rest ] = addendums;
+  const postfix: PostfixNode = {
+    type: NodeType.POSTFIX,
+    target,
+    addendum
+  };
+
+  return newPostfix(postfix, rest, location);
+};

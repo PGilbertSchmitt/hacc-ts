@@ -45,6 +45,8 @@ export enum NodeType {
   MAP = 'MAP',
   SET = 'SET',
   GROUP = 'GROUP',
+
+  POSTFIX = 'POSTFIX',
 }
 
 export type Node = KeywordNode
@@ -58,7 +60,18 @@ export type Node = KeywordNode
                  | FunctionNode
                  | ArrayNode
                  | MapNode
-                 | SetNode;
+                 | SetNode
+                 | PostfixNode;
+
+export enum AddendumType {
+  MEMBER = 'MEMBER',
+  CALL = 'CALL',
+  INDEX = 'INDEX',
+}
+
+export type Addendum = MemberAddendum
+                     | CallAddendum
+                     | IndexAddendum;
 
 export type KeywordNode = {
   type: NodeType.KEYWORD;
@@ -133,6 +146,27 @@ export type GroupNode = {
   type: NodeType.GROUP;
   nodes: Node[];
 };
+
+export type MemberAddendum = {
+  type: AddendumType.MEMBER;
+  member: IdentNode;
+};
+
+export type CallAddendum = {
+  type: AddendumType.CALL;
+  params: Node[];
+};
+
+export type IndexAddendum = {
+  type: AddendumType.INDEX;
+  index: Node
+};
+
+export type PostfixNode = {
+  type: NodeType.POSTFIX;
+  target: Node;
+  addendum: Addendum;
+}
 
 // The grammars for these are arrays of tuples where some of the collected parsed values
 // are thrown away, like whitespace or semicolons

@@ -10,7 +10,6 @@ const {
   newReturn,
   newNodeList,
   newBlock,
-  newEmptyBlock,
   newIdentList,
   newExprList,
   newKeyValuePair,
@@ -20,6 +19,10 @@ const {
   newSetLiteral,
   newMapLiteral,
   newGroup,
+  newMember,
+  newCall,
+  newIndex,
+  newPostfix,
 } = require('./helpers.ts');
 }
 
@@ -239,15 +242,14 @@ Return // Lowest priority, can't be contained within other expressions unless wi
 
 Expr = Assign
 
-
 UnaryExpression
   = op: UnaryOp node:Unary {
     return newUnary(op, node)
   }
 
 PostFix
-  = target:Primary {
-    return target;
+  = target:Primary addendums:(Member / Call / Index)* {
+    return newPostfix(target, addendums, location());
   }
 
 Unary
@@ -303,3 +305,21 @@ Assign
   = head:Or tail:(__ AssignOp __ Or)* {
     return newInfix(head, tail, location());
   }
+
+// Postfix Expressions
+
+Member
+  = _ '.' addendum:Ident {
+    return newMember(addendum, location());
+  }
+
+Call
+  = '(' _ list:ExprList? _ ')' {
+    return newCall(list, location());
+  }
+
+Index
+  = '[' _ expr:Expr _ ']' {
+    return newIndex(expr, location());
+  }
+
