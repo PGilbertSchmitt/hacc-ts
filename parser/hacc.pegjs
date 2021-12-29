@@ -13,34 +13,29 @@ const {
   newEmptyBlock,
   newIdentList,
   newExprList,
+  newKeyValuePair,
+  newKeyValuePairList,
   newFuncLiteral,
   newArrayLiteral,
+  newSetLiteral,
+  newMapLiteral,
+  newGroup,
 } = require('./helpers.ts');
 }
 
 // START HERE
 
 Program
-  = _ block:BlockBody _bs_ EOF { return block }
+  = _ block:BlockBody _ EOF { return block }
 
 BlockBody
-  = top:BlockLine body:(_bs_ BlockLine)* {
+  = top:BlockLine body:(__ _bs_ __ BlockLine __)* {
     return newBlock(top, body, location())
   }
 
 BlockLine
-  = _ head:Return {
-    return head;
-  }
-  / _ head:Expr tail:(__ ';' __ Expr)* {
+  = head:Return tail:(__ ';' __ Return)* {
     return newNodeList(head, tail);
-  }
-
-Expr = Assign
-
-Return
-  = RETURN __ expr:Expr {
-    return newReturn(expr, location());
   }
 
 // Terminals
@@ -169,8 +164,16 @@ Primary
   / String
   / FuncLiteral
   / ArrayLiteral
+  / SetLiteral
+  / MapLiteral
+  / BlockExpression // This has to be the lowest priority primary
 
 // Compound literals
+
+BlockExpression
+  = '(' _ body:BlockBody _ ')' {
+    return body
+  }
 
 IdentList
   = head:Ident tail:(_ ',' _ Ident)* {
@@ -182,41 +185,56 @@ ExprList
     return newNodeList(head, tail, location());
   }
 
-ScopedBlock
-  = '{' _ body:BlockBody _ '}' {
-    return body
-  }
-  / '{' _ '}' {
-    return newEmptyBlock(location());
+KeyTypes
+  = Number
+  / Ident
+  / String
+  / ArrayLiteral
+  / MapLiteral
+  / FuncLiteral
+  / BlockExpression
+
+KeyValPair
+  = key:KeyTypes _ ':' _ val:Expr {
+    return newKeyValuePair(key, val, location());
   }
 
-// KeyTypes
-//   = Number
-//   / Ident
-//   / String
-//   / ArrayLiteral
-//   / HashLiteral
-//   / FuncLiteral
-//   / GroupExpression
-
-// KeyValPair
-//   = key:KeyTypes _ ':' _ val:Expr {
-//     return newKeyValPair(key, val);
-//   }
+KeyValPairList
+  = head:KeyValPair tail:(_ ',' _ KeyValPair)* {
+    return newKeyValuePairList(head, tail, location());
+  }
 
 FuncLiteral
-  = '(' _ params:(IdentList)? _ ')' __ "=>" _ body:(
-    ScopedBlock / Expr
+  = '(' _ params:IdentList? _ ')' __ "=>" _ body:(
+    BlockExpression / Expr
   ) {
     return newFuncLiteral(params, body, location());
   }
 
 ArrayLiteral
-  = '[' _ list:ExprList _ ']' {
+  = '[' _ list:ExprList? _ ']' {
     return newArrayLiteral(list, location());
   }
 
+SetLiteral
+  = '<#' _ list:ExprList? _ '#>' {
+    return newSetLiteral(list, location());
+  }
+
+MapLiteral
+  = '{' _ pairs:KeyValPairList? _ '}' {
+    return newMapLiteral(pairs, location());
+  }
+
 // Expressions
+
+Return // Lowest priority, can't be contained within other expressions unless within a block
+  = ret:RETURN? __ expr:Expr {
+    return ret === null ? expr : newReturn(expr, location());
+  }
+
+Expr = Assign
+
 
 UnaryExpression
   = op: UnaryOp node:Unary {

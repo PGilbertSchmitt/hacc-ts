@@ -43,6 +43,7 @@ export enum NodeType {
   ARRAY = 'ARRAY',
   MAP = 'MAP',
   SET = 'SET',
+  GROUP = 'GROUP',
 }
 
 export type Node = KeywordNode
@@ -118,18 +119,24 @@ export type KeyValuePair = {
 }
 
 export type MapNode = {
-  type: NodeType.MAP
-  pairs: KeyValuePair[]
+  type: NodeType.MAP;
+  pairs: KeyValuePair[];
 };
 
 export type SetNode = {
-  type: NodeType.SET,
-  nodes: Node[]
+  type: NodeType.SET;
+  nodes: Node[];
+};
+
+export type GroupNode = {
+  type: NodeType.GROUP;
+  nodes: Node[];
 };
 
 // The grammars for these are arrays of tuples where some of the collected parsed values
 // are thrown away, like whitespace or semicolons
 export type ExpressionTail = [unknown, OpType, unknown, Node];
-export type LineTail = [unknown, unknown, unknown, Node];
+export type NodeTail = [unknown, unknown, unknown, Node];
 export type IdentListTail = [unknown, unknown, unknown, IdentNode];
-export type BlockTail = [unknown, Node[]];
+export type KeyValuePairTail = [unknown, unknown, unknown, KeyValuePair];
+export type BlockTail = [unknown, unknown, unknown, Node[], unknown];

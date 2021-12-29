@@ -1,6 +1,9 @@
 import {
+  Keyword,
   OpType,
   NodeType,
+  
+  Node,
 
   KeywordNode,
   IdentNode,
@@ -10,16 +13,18 @@ import {
   UnaryNode,
   ReturnNode,
   BlockNode,
-  IdentListTail,
   FunctionNode, 
   ArrayNode,
-
-  Node,
-
+  SetNode,
+  KeyValuePair,
+  MapNode,
+  GroupNode,
+  
   ExpressionTail,
-  LineTail,
+  NodeTail,
+  IdentListTail,
+  KeyValuePairTail,
   BlockTail,
-  Keyword,
 } from './ast';
 
 interface LocationPart {
@@ -140,18 +145,18 @@ export const newIdent = (name: string, _location: Location): IdentNode => ({
   name,
 });
 
-export const newReturn = (expression: Node, _location: Location): ReturnNode => ({
+export const newReturn = (node: Node, _location: Location): ReturnNode => ({
   type: NodeType.RETURN,
-  node: expression,
+  node,
 });
 
-export const newNodeList = (head: Node, tail: LineTail[] = []): Node[] => {
+export const newNodeList = (head: Node, tail: NodeTail[] = []): Node[] => {
   return [head, ...tail.map(tailNode => tailNode[3])];
 };
 
 export const newBlock = (top: Node[], body: BlockTail[], _location: Location): BlockNode => ({
   type: NodeType.BLOCK,
-  nodes: body.reduce((nodes, [_, newNodes]) => {
+  nodes: body.reduce((nodes, [_1, _2, _3, newNodes, _5]) => {
     return nodes.concat(...newNodes);
   }, top)
 });
@@ -168,19 +173,53 @@ export const newIdentList = (
 ): IdentNode[] => ([ head, ...tail.map(tailNode => tailNode[3]) ]);
 
 export const newFuncLiteral = (
-  params: IdentNode[],
+  params: IdentNode[] | null,
   body: Node,
   _location: Location
 ): FunctionNode => ({
   type: NodeType.FUNCTION,
-  params,
+  params: params === null ? [] : params,
   body
 });
 
 export const newArrayLiteral = (
-  nodes: Node[],
+  nodes: Node[] | null,
   _location: Location  
 ): ArrayNode => ({
   type: NodeType.ARRAY,
-  nodes
+  nodes: nodes === null ? [] : nodes
+});
+
+export const newSetLiteral = (
+  nodes: Node[] | null,
+  _location: Location
+): SetNode => ({
+  type: NodeType.SET,
+  nodes: nodes === null ? [] : nodes
+});
+
+export const newKeyValuePair = (
+  key: Node,
+  value: Node,
+  _location: Location
+): KeyValuePair => ({ key, value });
+
+export const newKeyValuePairList = (
+  head: KeyValuePair,
+  tail: KeyValuePairTail[]
+): KeyValuePair[] => ([ head, ...tail.map(tailNode => tailNode[3]) ]);
+
+export const newMapLiteral = (
+  pairs: KeyValuePair[] | null
+): MapNode => ({
+  type: NodeType.MAP,
+  pairs: pairs === null ? [] : pairs
+});
+
+export const newGroup = (
+  block: BlockNode,
+  _location: Location
+): GroupNode => ({
+  type: NodeType.GROUP,
+  nodes: block.nodes
 });
