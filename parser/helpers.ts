@@ -116,7 +116,7 @@ export const newUnary = (op: OpType, right: Node, _location: Location): UnaryNod
 });
 
 const wrapInfix = (left: Node, tail: ExpressionTail): InfixNode => {
-  const [ _1, op, _2, right] = tail;
+  const [, op,, right] = tail;
   return {
     type: NodeType.INFIX,
     left,
@@ -156,7 +156,7 @@ export const newNodeList = (head: Node, tail: NodeTail[] = []): Node[] => {
 
 export const newBlock = (top: Node[], body: BlockTail[], _location: Location): BlockNode => ({
   type: NodeType.BLOCK,
-  nodes: body.reduce((nodes, [_1, _2, _3, newNodes, _5]) => {
+  nodes: body.reduce((nodes, [,, newNodes]) => {
     return nodes.concat(...newNodes);
   }, top)
 });

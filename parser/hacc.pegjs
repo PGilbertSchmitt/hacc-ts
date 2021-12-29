@@ -29,7 +29,7 @@ Program
   = _ block:BlockBody _ EOF { return block }
 
 BlockBody
-  = top:BlockLine body:(__ _bs_ __ BlockLine __)* {
+  = top:BlockLine body:((__ _bs_)* __ BlockLine)* {
     return newBlock(top, body, location())
   }
 
@@ -38,13 +38,57 @@ BlockLine
     return newNodeList(head, tail);
   }
 
+// Whitespace
+
+_ "whitespace"
+  = ([ \t\n\r] / COMMENT)*
+
+__ "nonbreaking_space"
+  = [ \t]*
+
+_bs_ "breaking_space"
+  = [\n\r] / COMMENT
+
+_nb_ "nonbreaking_char"
+  = [^\n\r]*
+
+EOF = !.
+
 // Terminals
+
+ASSIGN     = '='
+PLUS       = '+'
+DASH       = '-'
+SLASH      = '/'
+DBL_SLASH  = '//'
+STAR       = '*'
+DBL_STAR   = '**'
+MODULO     = '%'
+PIPE       = '|'
+DBL_PIPE   = '||'
+AMP        = '&'
+DBL_AMP    = '&&'
+CARET      = '^'
+EQ         = '=='
+NEQ        = '!='
+GT         = '>'
+LT         = '<'
+GTEQ       = '>='
+LTEQ       = '<='
+DOT        = '.'
+DBL_DOT    = '..'
+TPL_DOT    = '...'
+BANG       = '!'
+RETURN     = '<-'
+UNDSC      = "_"
+SLASH_STAR = "/*"
+STAR_SLASH = "*/"
+
+COMMENT
+  = DBL_SLASH _nb_ [\n\r]
 
 ESCAPABLE
   = ["\\ntrbf]
-
-UNDSC
-  = "_"
 
 ALPHA
   = [a-z]i
@@ -60,46 +104,6 @@ HEX
 
 BINARY
   = [01]
-
-ASSIGN = '='
-PLUS = '+'
-DASH = '-'
-SLASH = '/'
-STAR = '*'
-DBL_STAR = '**'
-MODULO = '%'
-PIPE = '|'
-DBL_PIPE = '||'
-AMP = '&'
-DBL_AMP = '&&'
-CARET = '^'
-EQ = '=='
-NEQ = '!='
-GT = '>'
-LT = '<'
-GTEQ = '>='
-LTEQ = '<='
-DOT = '.'
-DBL_DOT = '..'
-TPL_DOT = '...'
-BANG = '!'
-RETURN = '<-'
-
-// Whitespace
-
-_ "whitespace"
-  = [ \t\n\r]*
-
-__ "nonbreaking_space"
-  = [ \t]*
-
-_bs_ "breaking_space"
-  = [\n\r]*
-
-_nb_ "nonbreaking_char"
-  = [^\n\r]*
-
-EOF = !.
 
 // Keywords
 

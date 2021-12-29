@@ -139,4 +139,4 @@ export type ExpressionTail = [unknown, OpType, unknown, Node];
 export type NodeTail = [unknown, unknown, unknown, Node];
 export type IdentListTail = [unknown, unknown, unknown, IdentNode];
 export type KeyValuePairTail = [unknown, unknown, unknown, KeyValuePair];
-export type BlockTail = [unknown, unknown, unknown, Node[], unknown];
+export type BlockTail = [unknown, unknown, Node[]];
