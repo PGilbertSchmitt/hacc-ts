@@ -23,6 +23,10 @@ const {
   newCall,
   newIndex,
   newPostfix,
+  newCase,
+  newCaseBlock,
+  newIf,
+  newSwitch,
 } = require('./helpers.ts');
 }
 
@@ -166,6 +170,8 @@ String
 
 Primary
   = Number
+  / IfExpr
+  / SwitchExpr
   / Keywords
   / Ident
   / String
@@ -173,13 +179,13 @@ Primary
   / ArrayLiteral
   / SetLiteral
   / MapLiteral
-  / BlockExpression // This has to be the lowest priority primary
+  / WrappedBlock // This has to be the lowest priority primary
 
 // Compound literals
 
-BlockExpression
+WrappedBlock
   = '(' _ body:BlockBody _ ')' {
-    return body
+    return body;
   }
 
 IdentList
@@ -194,12 +200,13 @@ ExprList
 
 KeyTypes
   = Number
+  / Keywords
   / Ident
   / String
   / ArrayLiteral
   / MapLiteral
   / FuncLiteral
-  / BlockExpression
+  / WrappedBlock
 
 KeyValPair
   = key:KeyTypes _ ':' _ val:Expr {
@@ -212,9 +219,7 @@ KeyValPairList
   }
 
 FuncLiteral
-  = '(' _ params:IdentList? _ ')' __ "=>" _ body:(
-    BlockExpression / Expr
-  ) {
+  = '(' _ params:IdentList? _ ')' __ "=>" _ body:Expr {
     return newFuncLiteral(params, body, location());
   }
 
@@ -323,3 +328,24 @@ Index
     return newIndex(expr, location());
   }
 
+// Flow Control
+
+Case
+  = condition:KeyTypes ':' _ consequence:Return {
+    return newCase(condition, consequence, location());
+  }
+
+CaseBlock
+  = '{' _ head:Case tail:((__ (_bs_ / ';'))* __  Case)* _ '}' {
+    return newCaseBlock(head, tail, location());
+  }
+
+IfExpr
+  = "if" __ cases:CaseBlock {
+    return newIf(cases, location());
+  }
+
+SwitchExpr
+  = "switch" __ test:WrappedBlock _ cases:CaseBlock {
+    return newSwitch(test, cases, location());
+  }

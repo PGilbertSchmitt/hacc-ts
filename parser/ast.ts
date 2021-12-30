@@ -38,6 +38,7 @@ export enum NodeType {
   INFIX = 'INFIX',
   UNARY = 'UNARY',
   RETURN = 'RETURN',
+  POSTFIX = 'POSTFIX',
 
   BLOCK = 'BLOCK',
   FUNCTION = 'FUNCTION',
@@ -46,7 +47,8 @@ export enum NodeType {
   SET = 'SET',
   GROUP = 'GROUP',
 
-  POSTFIX = 'POSTFIX',
+  IF = 'IF',
+  SWITCH = 'SWITCH',
 }
 
 export type Node = KeywordNode
@@ -61,7 +63,9 @@ export type Node = KeywordNode
                  | ArrayNode
                  | MapNode
                  | SetNode
-                 | PostfixNode;
+                 | PostfixNode
+                 | IfNode
+                 | SwitchNode;
 
 export enum AddendumType {
   MEMBER = 'MEMBER',
@@ -168,6 +172,22 @@ export type PostfixNode = {
   addendum: Addendum;
 }
 
+export type Case = {
+  condition: Node;
+  consequence: Node;
+}
+
+export type IfNode = {
+  type: NodeType.IF;
+  cases: Case[];
+}
+
+export type SwitchNode = {
+  type: NodeType.SWITCH;
+  test: BlockNode;
+  cases: Case[];
+}
+
 // The grammars for these are arrays of tuples where some of the collected parsed values
 // are thrown away, like whitespace or semicolons
 export type ExpressionTail = [unknown, OpType, unknown, Node];
@@ -175,3 +195,4 @@ export type NodeTail = [unknown, unknown, unknown, Node];
 export type IdentListTail = [unknown, unknown, unknown, IdentNode];
 export type KeyValuePairTail = [unknown, unknown, unknown, KeyValuePair];
 export type BlockTail = [unknown, unknown, Node[]];
+export type CaseBlockTail = [unknown, unknown, Case];

@@ -25,12 +25,16 @@ import {
   CallAddendum,
   IndexAddendum,
   PostfixNode,
+  Case,
+  IfNode,
+  SwitchNode,
   
   ExpressionTail,
   NodeTail,
   IdentListTail,
   KeyValuePairTail,
   BlockTail,
+  CaseBlockTail,
 } from './ast';
 
 interface LocationPart {
@@ -107,17 +111,27 @@ export const parseOp = (opString: string): OpType => {
   }
 };
 
-export const parseNumber = (numberString: string, _location: Location): NumberNode => ({
+export const parseNumber = (
+  numberString: string,
+  _location: Location,
+): NumberNode => ({
   type: NodeType.NUMBER,
   value: parseFloat(numberString),
 });
 
-export const newString = (value: string, _location: Location): StringNode => ({
+export const newString = (
+  value: string,
+  _location: Location,
+): StringNode => ({
   type: NodeType.STRING,
   value,
 });
 
-export const newUnary = (op: OpType, right: Node, _location: Location): UnaryNode => ({
+export const newUnary = (
+  op: OpType,
+  right: Node,
+  _location: Location,
+): UnaryNode => ({
   type: NodeType.UNARY,
   op,
   right,
@@ -136,7 +150,7 @@ const wrapInfix = (left: Node, tail: ExpressionTail): InfixNode => {
 export const newInfix = (
   head: Node,
   tail: ExpressionTail[],
-  location: Location
+  location: Location,
 ): Node => {
   if (tail.length === 0) {
     return head;
@@ -148,31 +162,39 @@ export const newInfix = (
   return newInfix(infix, rest, location);
 };
 
-export const newIdent = (name: string, _location: Location): IdentNode => ({
+export const newIdent = (
+  name: string,
+  _location: Location,
+): IdentNode => ({
   type: NodeType.IDENT,
   name,
 });
 
-export const newReturn = (node: Node, _location: Location): ReturnNode => ({
+export const newReturn = (
+  node: Node,
+  _location: Location,
+): ReturnNode => ({
   type: NodeType.RETURN,
   node,
 });
 
-export const newNodeList = (head: Node, tail: NodeTail[] = []): Node[] => {
+export const newNodeList = (
+  head: Node,
+  tail: NodeTail[] = [],
+): Node[] => {
   return [head, ...tail.map(tailNode => tailNode[3])];
 };
 
-export const newBlock = (top: Node[], body: BlockTail[], _location: Location): BlockNode => ({
+export const newBlock = (
+  top: Node[],
+  body: BlockTail[],
+  _location: Location,
+): BlockNode => ({
   type: NodeType.BLOCK,
   nodes: body.reduce((nodes, [,, newNodes]) => {
     return nodes.concat(...newNodes);
-  }, top)
+  }, top),
 });
-
-// export const newEmptyBlock = (_location: Location): BlockNode => ({
-//   type: NodeType.BLOCK,
-//   nodes: []
-// });
 
 export const newIdentList = (
   head: IdentNode,
@@ -187,7 +209,7 @@ export const newFuncLiteral = (
 ): FunctionNode => ({
   type: NodeType.FUNCTION,
   params: params === null ? [] : params,
-  body
+  body,
 });
 
 export const newArrayLiteral = (
@@ -195,7 +217,7 @@ export const newArrayLiteral = (
   _location: Location,
 ): ArrayNode => ({
   type: NodeType.ARRAY,
-  nodes: nodes === null ? [] : nodes
+  nodes: nodes === null ? [] : nodes,
 });
 
 export const newSetLiteral = (
@@ -203,7 +225,7 @@ export const newSetLiteral = (
   _location: Location,
 ): SetNode => ({
   type: NodeType.SET,
-  nodes: nodes === null ? [] : nodes
+  nodes: nodes === null ? [] : nodes,
 });
 
 export const newKeyValuePair = (
@@ -214,14 +236,14 @@ export const newKeyValuePair = (
 
 export const newKeyValuePairList = (
   head: KeyValuePair,
-  tail: KeyValuePairTail[]
+  tail: KeyValuePairTail[],
 ): KeyValuePair[] => ([ head, ...tail.map(tailNode => tailNode[3]) ]);
 
 export const newMapLiteral = (
   pairs: KeyValuePair[] | null,
 ): MapNode => ({
   type: NodeType.MAP,
-  pairs: pairs === null ? [] : pairs
+  pairs: pairs === null ? [] : pairs,
 });
 
 export const newGroup = (
@@ -229,22 +251,22 @@ export const newGroup = (
   _location: Location,
 ): GroupNode => ({
   type: NodeType.GROUP,
-  nodes: block.nodes
+  nodes: block.nodes,
 });
 
 export const newMember = (
   member: IdentNode,
 ): MemberAddendum => ({
   type: AddendumType.MEMBER,
-  member
+  member,
 });
 
 export const newCall = (
-  params: Node[],
+  params: Node[] | null,
   _location: Location,
 ): CallAddendum => ({
   type: AddendumType.CALL,
-  params
+  params: params === null ? [] : params,
 });
 
 export const newIndex = (
@@ -252,7 +274,7 @@ export const newIndex = (
   _location: Location,
 ): IndexAddendum => ({
   type: AddendumType.INDEX,
-  index
+  index,
 })
 
 export const newPostfix = (
@@ -268,8 +290,41 @@ export const newPostfix = (
   const postfix: PostfixNode = {
     type: NodeType.POSTFIX,
     target,
-    addendum
+    addendum,
   };
 
   return newPostfix(postfix, rest, location);
 };
+
+export const newCase = (
+  condition: Node,
+  consequence: Node,
+  _location: Location,
+): Case => ({
+  condition,
+  consequence
+});
+
+export const newCaseBlock = (
+  head: Case,
+  tail: CaseBlockTail[],
+  _location: Location,
+): Case[] => ([ head, ...tail.map(tailNode => tailNode[2]) ]);
+
+export const newIf = (
+  cases: Case[],
+  _location: Location,
+): IfNode => ({
+  type: NodeType.IF,
+  cases,
+});
+
+export const newSwitch = (
+  test: BlockNode,
+  cases: Case[],
+  _location: Location,
+): SwitchNode => ({
+  type: NodeType.SWITCH,
+  test,
+  cases,
+});
