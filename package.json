@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-parser": "pegjs --format commonjs -o ./parser/parser.js ./parser/hacc.pegjs"
+    "build-parser": "pegjs --format commonjs -o ./parser/parser.js ./parser/hacc.pegjs",
+    "parse-rubric": "node -r ts-node/register parser/tryParse.ts"
   },
   "author": "",
   "license": "ISC",
