@@ -1,7 +1,7 @@
-import { parse } from './parser';
+import { parse } from './src/parser/parser';
 import { readFileSync, writeFileSync } from 'fs';
 
-const rubric = readFileSync(__dirname + '/../rubric.hacc').toString();
+const rubric = readFileSync(__dirname + '/rubric.hacc').toString();
 
 try {
   const ast = JSON.stringify(parse(rubric));

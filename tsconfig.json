@@ -23,9 +23,8 @@
     "skipLibCheck": true
   },
   "include": [
-    "./parser/*.ts",
-    "./parser/parser.js",
-    "./parser-generator/*.ts"
+    "./src/**/*.ts",
+    "./src/parser/parser.js"
   ],
   "exclude": [
     "./node_modules/"
