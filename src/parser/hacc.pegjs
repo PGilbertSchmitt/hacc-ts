@@ -262,52 +262,52 @@ Unary
   / PostFix
 
 Exponentiation
-  = head:Unary tail:(__ ExpOp __ Unary)* {
+  = head:Unary tail:(__ ExpOp _ Unary)* {
     return newInfix(head, tail, location());
   }
 
 Multiplication
-  = head:Exponentiation tail:(__ MultOp __ Exponentiation)* {
+  = head:Exponentiation tail:(__ MultOp _ Exponentiation)* {
     return newInfix(head, tail, location());
   }
 
 Addition
-  = head:Multiplication tail:(__ AddOp __ Multiplication)* {
+  = head:Multiplication tail:(__ AddOp _ Multiplication)* {
     return newInfix(head, tail, location());
   }
 
 Range
-  = head:Addition tail:(__ RangeOp __ Addition)* {
+  = head:Addition tail:(__ RangeOp _ Addition)* {
     return newInfix(head, tail, location());
   }
 
 Logic
-  = head:Range tail:(__ LogicOp __ Range)* {
+  = head:Range tail:(__ LogicOp _ Range)* {
     return newInfix(head, tail, location());
   }
 
 Comparison
-  = head:Logic tail:(__ CompOp __ Logic)* {
+  = head:Logic tail:(__ CompOp _ Logic)* {
     return newInfix(head, tail, location());
   }
 
 Equality
-  = head:Comparison tail:(__ EqOp __ Comparison)* {
+  = head:Comparison tail:(__ EqOp _ Comparison)* {
     return newInfix(head, tail, location());
   }
 
 And
-  = head:Equality tail:(__ AndOp __ Equality)* {
+  = head:Equality tail:(__ AndOp _ Equality)* {
     return newInfix(head, tail, location());
   }
 
 Or
-  = head:And tail:(__ OrOp __ And)* {
+  = head:And tail:(__ OrOp _ And)* {
     return newInfix(head, tail, location());
   }
 
 Assign
-  = head:Or tail:(__ AssignOp __ Or)* {
+  = head:Or tail:(__ AssignOp _ Or)* {
     return newInfix(head, tail, location());
   }
 

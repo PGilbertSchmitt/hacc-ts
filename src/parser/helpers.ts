@@ -128,14 +128,20 @@ export const newString = (
 });
 
 export const newUnary = (
-  op: OpType,
-  right: Node,
-  _location: Location,
-): UnaryNode => ({
-  type: NodeType.UNARY,
-  op,
-  right,
-});
+    op: OpType,
+    right: Node,
+    _location: Location,
+): UnaryNode | NumberNode => {
+  if (op === OpType.DASH && right.type === NodeType.NUMBER) {
+    right.value *= -1;
+    return right;
+  }
+  return {
+    type: NodeType.UNARY,
+    op,
+    right,
+  };
+};
 
 const wrapInfix = (left: Node, tail: ExpressionTail): InfixNode => {
   const [, op,, right] = tail;
