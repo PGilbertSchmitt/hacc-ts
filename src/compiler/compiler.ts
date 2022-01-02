@@ -1,4 +1,4 @@
-import { Node, BlockNode, NodeType } from '../parser/ast';
+import { Node, BlockNode, NodeType, OpType } from '../parser/ast';
 import {
   HaccObject,
   newNumber,
@@ -19,6 +19,21 @@ const addConstant = (obj: HaccObject, bytecode: Bytecode): number => {
   return bytecode.constants.length - 1;
 };
 
+const infixOpToCode = (op: OpType): OpCode => {
+  switch (op) {
+    case OpType.PLUS:
+      return OpCode.ADD;  
+    case OpType.DASH:
+      return OpCode.SUBTRACT;
+    case OpType.STAR:
+      return OpCode.MULTIPLY;
+    case OpType.SLASH:
+      return OpCode.DIVIDE;
+    default:
+      throw new Error(`Cannot use operator '${op}' in infix expression`);
+  }
+}
+
 const _compile = (node: Node, bytecode: Bytecode) => {
   switch (node.type) {
     case NodeType.BLOCK:
@@ -28,17 +43,18 @@ const _compile = (node: Node, bytecode: Bytecode) => {
     case NodeType.INFIX:
       _compile(node.left, bytecode);
       _compile(node.right, bytecode);
+      bytecode.instructions.push(infixOpToCode(node.op));
       break;
 
     case NodeType.NUMBER: {
       const index = addConstant(newNumber(node.value), bytecode);
-      bytecode.instructions.push(OpCode.Constant, [index]);
+      bytecode.instructions.push(OpCode.CONSTANT, [index]);
       break;
     }
 
     case NodeType.STRING: {
       const index = addConstant(newString(node.value), bytecode);
-      bytecode.instructions.push(OpCode.Constant, [index]);
+      bytecode.instructions.push(OpCode.CONSTANT, [index]);
       break;
     }
 

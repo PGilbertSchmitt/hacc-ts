@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-parser": "pegjs --format commonjs -o ./src/parser/parser.js /.src/parser/hacc.pegjs",
-    "parse-rubric": "node -r ts-node/register ./tryParse.ts",
-    "compile-rubric": "node -r ts-node/register ./tryCompile.ts"
+    "build-parser": "pegjs --format commonjs -o ./src/parser/parser.js ./src/parser/hacc.pegjs",
+    "runts": "node -r ts-node/register",
+    "parse-rubric": "npm run runts ./tryParse.ts",
+    "compile-rubric": "npm run runts ./tryCompile.ts",
+    "run-rubric": "npm run runts ./tryRun.ts"
   },
   "author": "",
   "license": "ISC",

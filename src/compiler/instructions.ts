@@ -9,7 +9,7 @@ export class Instructions {
     this.length = 0;
   }
 
-  push = (op: OpCode, operands: number[]): number => {
+  push = (op: OpCode, operands: number[] = []): number => {
     return this.addToBytes(this.toBuffer(op, operands));
   };
 

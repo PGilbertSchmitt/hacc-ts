@@ -23,22 +23,22 @@ export const inspect = (object: HaccObject): string => {
   }
 };
 
-interface NumberObject {
+export interface NumberObject {
   type: ObjectType.NUMBER;
   value: number;
 }
 
-interface StringObject {
+export interface StringObject {
   type: ObjectType.STRING;
   value: string;
 }
 
-interface BooleanObject {
+export interface BooleanObject {
   type: ObjectType.BOOLEAN;
   value: boolean;
 }
 
-interface NullObject {
+export interface NullObject {
   type: ObjectType.NULL;
 }
 

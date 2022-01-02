@@ -3,7 +3,7 @@ import { compile } from './src/compiler/compiler';
 import { decompile, describeConstants } from './src/compiler/debug';
 
 const main = () => {
-  const input = `1 + 3 + 15`;
+  const input = `1 + 3 * -15 / 5 - 4`;
 
   try {
     const ast = parse(input);
